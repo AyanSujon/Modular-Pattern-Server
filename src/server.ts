@@ -22,7 +22,8 @@ const initDB = async() => {
             name VARCHAR(20),
             email VARCHAR(255) UNIQUE NOT NULL,
             password VARCHAR(255) NOT NULL,
-            idActive BOOLEAN DEFAULT TRUE,
+            isActive BOOLEAN DEFAULT TRUE,
+            age INT,
             createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`)
@@ -36,7 +37,20 @@ initDB();
 
 
 
-
+app.post('/users', async (req : Request, res : Response) => {
+  const { name, email, password, age } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO users (name, email, password, age) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [name, email, password, age]
+    )
+    res.status(201).json(result.rows[0])
+    console.log("User created successfully:", result.rows[0]);
+  } catch (error) {
+    console.error("Error creating user:", error)
+    res.status(500).json({ error: "Internal Server Error" })
+  }
+})
 
 
 
