@@ -91,7 +91,7 @@ app.get('/api/users', async (req : Request, res : Response) => {
 
 
 
-
+// Get endpoint to retrieve a user by ID
 app.get('/api/users/:id', async (req : Request, res : Response) => {
   const userId = req.params.id; 
   console.log("Retrieving user with ID:", userId);
@@ -126,12 +126,39 @@ app.get('/api/users/:id', async (req : Request, res : Response) => {
 
 
 
-
-
-
-
-
-
+// Put endpoint to update a user by ID
+app.put('/api/users/:id', async (req : Request, res : Response) => {
+  const {id} = req.params; 
+  const { name, email, password, age, isActive} = req.body; 
+  console.log("Updating user with ID:", id);
+  console.log("Request body:", req.body);
+  try {
+    const result = await pool.query(
+      `UPDATE users SET name = $1, email = $2, password = $3, age = $4, isActive = $5, updatedAt = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *`,
+      [name, email, password, age, isActive, id]
+    );
+    console.log("Update result:", result.rows);
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: result.rows[0]
+    });
+  } catch (error: any) {
+    console.error("Error updating user:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+      data: null
+    });
+  }
+});
 
 
 
