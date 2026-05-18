@@ -92,6 +92,73 @@ app.get('/api/users', async (req : Request, res : Response) => {
 
 
 
+app.get('/api/users/:id', async (req : Request, res : Response) => {
+  const userId = req.params.id; 
+  console.log("Retrieving user with ID:", userId);
+  try {
+    const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [userId])
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: null
+      });
+    }
+    console.log("Retrieving user with ID:", result.rows[0]);
+    res.status(200).json({
+      success: true,
+      message: "User retrieved successfully",
+      data: result.rows[0]
+    });
+  } catch (error: any) {
+    console.error("Error retrieving user:", error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      error: error,
+      data: null
+    });
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
