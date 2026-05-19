@@ -174,8 +174,35 @@ app.put('/api/users/:id', async (req : Request, res : Response) => {
 
 
 
-
-
+// Delete endpoint to delete a user by ID
+app.delete('/api/users/:id', async (req : Request, res : Response) => {
+  const {id} = req.params; 
+  console.log("Deleting user with ID:", id); 
+  try {
+    const result = await pool.query(`DELETE FROM users WHERE id = $1 RETURNING *`, [id])
+    if (result.rowCount === 0) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not found",
+        data: null
+      });
+    } 
+    console.log("User deleted successfully:", result.rows[0]);
+    res.status(200).json({
+      success: true,  
+      message: "User deleted successfully",
+      data: result.rows[0]
+    });
+  } catch (error: any) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message,
+      error: error, 
+      data: null
+    });
+  } 
+})
 
 
 
