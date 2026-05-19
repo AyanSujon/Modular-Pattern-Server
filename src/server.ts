@@ -1,7 +1,8 @@
 import express, { type Application, type Request, type Response } from "express";
 const app: Application = express()
-const port = 3000
+const port = config.port || 3000;
 import {Pool} from "pg"
+import config from "./config";
 
 
 
@@ -9,7 +10,7 @@ app.use(express.json());
 
 
 const pool = new Pool({
-    connectionString: "postgresql://neondb_owner:npg_NraTC2pFQg6y@ep-broad-butterfly-aqg9pi7w-pooler.c-8.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
+    connectionString: config.connectionString || "",
 })
 
 
