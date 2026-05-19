@@ -134,7 +134,15 @@ app.put('/api/users/:id', async (req : Request, res : Response) => {
   console.log("Request body:", req.body);
   try {
     const result = await pool.query(
-      `UPDATE users SET name = $1, email = $2, password = $3, age = $4, isActive = $5, updatedAt = CURRENT_TIMESTAMP WHERE id = $6 RETURNING *`,
+      `UPDATE users 
+      SET
+      name = COALESCE($1, name), 
+      email = COALESCE($2, email), 
+      password = COALESCE($3, password), 
+      age = COALESCE($4, age), 
+      isActive = COALESCE($5, isActive), 
+      updatedAt = CURRENT_TIMESTAMP 
+      WHERE id = $6 RETURNING *`,
       [name, email, password, age, isActive, id]
     );
     console.log("Update result:", result.rows);
